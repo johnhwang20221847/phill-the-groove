@@ -13,6 +13,8 @@ export default function PostCard({ post, onAuthRequired }) {
   const [loading, setLoading] = useState(false)
 
   const rank = getRank(post.author_score || 0)
+  const coverUrl = post.cover_url || null
+  const authorName = post.author_name || '?'
 
   async function handleReaction(key) {
     if (!user) { onAuthRequired(); return }
@@ -60,8 +62,8 @@ export default function PostCard({ post, onAuthRequired }) {
         {/* Song info */}
         <div className="flex gap-3 mb-3">
           <div className="shrink-0 w-14 h-14 rounded-full bg-groove-vinyl flex items-center justify-center shadow-inner group-hover:rotate-6 transition-transform duration-500">
-            {post.cover_url ? (
-              <img src={post.cover_url} alt="" className="w-full h-full rounded-full object-cover opacity-80" />
+            {coverUrl ? (
+              <img src={coverUrl} alt="" className="w-full h-full rounded-full object-cover opacity-80" />
             ) : (
               <div className="w-5 h-5 rounded-full bg-groove-label flex items-center justify-center">
                 <div className="w-1.5 h-1.5 rounded-full bg-groove-vinyl" />
@@ -105,9 +107,9 @@ export default function PostCard({ post, onAuthRequired }) {
         <div className="flex items-center justify-between">
           <Link to={`/profile/${post.user_id}`} className="flex items-center gap-1.5 hover:opacity-70 transition-opacity">
             <div className="w-5 h-5 rounded-full bg-groove-vinyl flex items-center justify-center text-groove-cream font-mono text-[9px] font-bold">
-              {post.author_name?.charAt(0).toUpperCase()}
+              {authorName.charAt(0).toUpperCase()}
             </div>
-            <span className="font-mono text-xs text-groove-label">{rank.icon} {post.author_name}</span>
+            <span className="font-mono text-xs text-groove-label">{rank.icon} {authorName}</span>
           </Link>
           <span className="font-mono text-[10px] text-groove-dust">
             {post.created_at ? formatDistanceToNow(new Date(post.created_at), { addSuffix: true }) : ''}
