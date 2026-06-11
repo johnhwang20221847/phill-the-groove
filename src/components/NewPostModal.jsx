@@ -5,7 +5,7 @@ import { collection, addDoc, doc, updateDoc, increment, serverTimestamp } from '
 
 export default function NewPostModal({ onClose }) {
   const { user, profile } = useAuth()
-  const [form, setForm] = useState({ song_title: '', artist: '', genre: '', year: '', note: '', cover_url: '' })
+  const [form, setForm] = useState({ song_title: '', artist: '', genre: '', year: '', note: '', cover_url: '', spotify_url: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -26,6 +26,7 @@ export default function NewPostModal({ onClose }) {
         year: form.year ? parseInt(form.year) : null,
         note: form.note.trim() || null,
         cover_url: form.cover_url.trim() || null,
+        spotify_url: form.spotify_url.trim() || null,
         created_at: new Date().toISOString(),
       })
 
@@ -76,6 +77,7 @@ export default function NewPostModal({ onClose }) {
               {field('Year', 'year', { placeholder: '1959', type: 'number', min: '1900', max: '2099' })}
             </div>
             {field('Album Cover URL', 'cover_url', { placeholder: 'https://...' })}
+            {field('Spotify URL', 'spotify_url', { placeholder: 'https://open.spotify.com/track/...' })}  
             <div>
               <label className="font-mono text-xs text-groove-label uppercase tracking-wider block mb-1">Your Take</label>
               <textarea value={form.note} onChange={set('note')} rows={3} placeholder="Why does this one hit different?" className="w-full bg-groove-paper border border-groove-dust rounded px-3 py-2 font-mono text-sm text-groove-vinyl placeholder-groove-dust/70 focus:outline-none focus:border-groove-brown resize-none" />
