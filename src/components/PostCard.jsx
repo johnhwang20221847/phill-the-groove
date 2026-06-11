@@ -90,7 +90,7 @@ async function generateShareCard(post) {
     ctx.font = '600 9px monospace'
     ctx.letterSpacing = '2px'
     ctx.fillText(post.genre.toUpperCase(), textX + 10, textY + 14)
-    textY += 34
+    textY += 42
   }
 
   // 곡 제목
@@ -220,7 +220,7 @@ function ShareModal({ post, onClose }) {
   }
 
   async function copyLink() {
-    await navigator.clipboard.writeText('https://phill-the-groove.netlify.app')
+    await navigator.clipboard.writeText('https://phill-groove.phillie.site/')
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
