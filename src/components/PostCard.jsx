@@ -5,6 +5,7 @@ import { useAuth } from '../lib/AuthContext'
 import { db } from '../lib/firebase'
 import { doc, setDoc, deleteDoc, updateDoc, increment } from 'firebase/firestore'
 import { REACTIONS, getRank } from '../lib/ranks'
+import NewPostModal from './NewPostModal'
 
 export default function PostCard({ post, onAuthRequired }) {
   const { user } = useAuth()
@@ -12,6 +13,7 @@ export default function PostCard({ post, onAuthRequired }) {
   const [counts, setCounts] = useState(post.reaction_counts || {})
   const [loading, setLoading] = useState(false)
   const [showPlayer, setShowPlayer] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   const rank = getRank(post.author_score || 0)
   const coverUrl = post.cover_url || null
