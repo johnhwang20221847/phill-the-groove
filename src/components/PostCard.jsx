@@ -162,10 +162,27 @@ export default function PostCard({ post, onAuthRequired }) {
             </div>
             <span className="font-mono text-xs text-groove-label">{rank.icon} {authorName}</span>
           </Link>
-          <span className="font-mono text-[10px] text-groove-dust">
-            {post.created_at ? formatDistanceToNow(new Date(post.created_at), { addSuffix: true }) : ''}
-          </span>
+          <div className="flex items-center gap-2">
+            {user?.uid === post.user_id && (
+              <button
+                onClick={() => setEditOpen(true)}
+                className="font-mono text-[10px] text-groove-dust hover:text-groove-brown transition-colors"
+              >
+                ✏️ Edit
+              </button>
+            )}
+            <span className="font-mono text-[10px] text-groove-dust">
+              {post.created_at ? formatDistanceToNow(new Date(post.created_at), { addSuffix: true }) : ''}
+            </span>
+          </div>
         </div>
+
+        {editOpen && (
+          <NewPostModal
+            onClose={() => setEditOpen(false)}
+            editPost={post}
+          />
+        )}
       </div>
     </article>
   )
