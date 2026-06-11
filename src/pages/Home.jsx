@@ -6,10 +6,10 @@ import PostCard from '../components/PostCard'
 import NewPostModal from '../components/NewPostModal'
 
 const SORT_OPTIONS = [
-  { key: 'latest',  label: '최신순' },
-  { key: 'title',   label: '제목 A-Z' },
-  { key: 'artist',  label: '아티스트 A-Z' },
-  { key: 'genre',   label: '장르' },
+  { key: 'latest',  label: 'Latest (최신순)' },
+  { key: 'title',   label: 'Title (제목) A-Z' },
+  { key: 'artist',  label: 'Artist (아티스트) A-Z' },
+  { key: 'genre',   label: 'Genre (장르) A-Z' },
 ]
 
 export default function Home({ onAuthRequired }) {
@@ -22,7 +22,6 @@ export default function Home({ onAuthRequired }) {
   // 필터/정렬 상태
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState('latest')
-  const [activeGenre, setActiveGenre] = useState('ALL')
 
   useEffect(() => {
     const q = query(collection(db, 'posts'), orderBy('created_at', 'desc'), limit(100))
@@ -51,20 +50,9 @@ export default function Home({ onAuthRequired }) {
     return unsub
   }, [user?.uid])
 
-  // 장르 목록 추출
-  const genres = useMemo(() => {
-    const set = new Set(posts.map(p => p.genre).filter(Boolean))
-    return ['ALL', ...Array.from(set).sort((a, b) => a.localeCompare(b))]
-  }, [posts])
-
   // 필터 + 정렬 적용
   const filteredPosts = useMemo(() => {
     let result = [...posts]
-
-    // 장르 필터
-    if (activeGenre !== 'ALL') {
-      result = result.filter(p => p.genre === activeGenre)
-    }
 
     // 검색 (제목, 아티스트)
     if (search.trim()) {
@@ -77,21 +65,14 @@ export default function Home({ onAuthRequired }) {
 
     // 정렬
     result.sort((a, b) => {
-      if (sortKey === 'title') {
-        return (a.song_title || '').localeCompare(b.song_title || '', ['ko', 'en'])
-      }
-      if (sortKey === 'artist') {
-        return (a.artist || '').localeCompare(b.artist || '', ['ko', 'en'])
-      }
-      if (sortKey === 'genre') {
-        return (a.genre || '').localeCompare(b.genre || '', ['ko', 'en'])
-      }
-      // latest (default)
+      if (sortKey === 'title')  return (a.song_title || '').localeCompare(b.song_title || '', ['ko', 'en'])
+      if (sortKey === 'artist') return (a.artist || '').localeCompare(b.artist || '', ['ko', 'en'])
+      if (sortKey === 'genre')  return (a.genre || '').localeCompare(b.genre || '', ['ko', 'en'])
       return new Date(b.created_at) - new Date(a.created_at)
     })
 
     return result
-  }, [posts, search, sortKey, activeGenre])
+  }, [posts, search, sortKey])
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
@@ -180,33 +161,12 @@ export default function Home({ onAuthRequired }) {
             </button>
           ))}
         </div>
-
-        {/* 장르 필터 */}
-        {genres.length > 1 && (
-          <div className="flex gap-1.5 flex-wrap">
-            {genres.map(g => (
-              <button
-                key={g}
-                onClick={() => setActiveGenre(g)}
-                className={`font-mono text-[10px] tracking-wider uppercase px-2.5 py-1 rounded transition-all ${
-                  activeGenre === g
-                    ? 'bg-groove-red text-groove-cream'
-                    : 'bg-groove-cream border border-groove-dust text-groove-label hover:border-groove-brown'
-                }`}
-              >
-                {g}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* 결과 카운트 */}
-      {(search || activeGenre !== 'ALL') && !loading && (
+      {search && !loading && (
         <p className="font-mono text-xs text-groove-label mb-3">
-          {filteredPosts.length}개 결과
-          {search && <span> — "{search}"</span>}
-          {activeGenre !== 'ALL' && <span> in {activeGenre}</span>}
+          {filteredPosts.length}개 결과 — "{search}"
         </p>
       )}
 
@@ -230,7 +190,7 @@ export default function Home({ onAuthRequired }) {
           ) : (
             <>
               <p className="font-display font-bold text-groove-vinyl text-xl mb-2">No results found.</p>
-              <button onClick={() => { setSearch(''); setActiveGenre('ALL') }}
+              <button onClick={() => setSearch('')}
                 className="font-mono text-xs text-groove-red hover:underline mt-1">
                 필터 초기화
               </button>
