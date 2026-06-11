@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import { useAuth } from '../lib/AuthContext'
 import { db } from '../lib/firebase'
-import { doc, setDoc, deleteDoc, getDoc, updateDoc, increment } from 'firebase/firestore'
+import { doc, setDoc, deleteDoc, updateDoc, increment } from 'firebase/firestore'
 import { REACTIONS, getRank } from '../lib/ranks'
 
 export default function PostCard({ post, onAuthRequired }) {
@@ -11,10 +11,17 @@ export default function PostCard({ post, onAuthRequired }) {
   const [userReaction, setUserReaction] = useState(post.user_reaction || null)
   const [counts, setCounts] = useState(post.reaction_counts || {})
   const [loading, setLoading] = useState(false)
+  const [showPlayer, setShowPlayer] = useState(false)
 
   const rank = getRank(post.author_score || 0)
   const coverUrl = post.cover_url || null
   const authorName = post.author_name || '?'
+
+  function getSpotifyId(url) {
+    if (!url) return null
+    const match = url.match(/track\/([a-zA-Z0-9]+)/)
+    return match ? match[1] : null
+  }
 
   async function handleReaction(key) {
     if (!user) { onAuthRequired(); return }
@@ -27,14 +34,12 @@ export default function PostCard({ post, onAuthRequired }) {
 
     try {
       if (userReaction === key) {
-        // Remove reaction
         const old = REACTIONS.find(r => r.key === userReaction)
         await deleteDoc(reactionRef)
         if (old.score !== 0) await updateDoc(authorRef, { total_score: increment(-old.score) })
         setCounts(c => ({ ...c, [key]: Math.max(0, (c[key] || 0) - 1) }))
         setUserReaction(null)
       } else {
-        // Replace or add reaction
         const oldReaction = userReaction ? REACTIONS.find(r => r.key === userReaction) : null
         await setDoc(reactionRef, { color: key, score_value: reaction.score, user_id: user.uid })
         const scoreDelta = reaction.score - (oldReaction?.score || 0)
@@ -54,6 +59,8 @@ export default function PostCard({ post, onAuthRequired }) {
       setLoading(false)
     }
   }
+
+  const spotifyId = getSpotifyId(post.spotify_url)
 
   return (
     <article className="bg-groove-cream border border-groove-dust/60 rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
@@ -76,9 +83,31 @@ export default function PostCard({ post, onAuthRequired }) {
             <div className="flex flex-wrap gap-1 mt-1.5">
               {post.genre && <span className="font-mono text-[10px] bg-groove-paper border border-groove-dust px-1.5 py-0.5 rounded text-groove-label uppercase tracking-wide">{post.genre}</span>}
               {post.year && <span className="font-mono text-[10px] bg-groove-paper border border-groove-dust px-1.5 py-0.5 rounded text-groove-label">{post.year}</span>}
+              {spotifyId && (
+                <button
+                  onClick={() => setShowPlayer(p => !p)}
+                  className="flex items-center gap-1 font-mono text-[10px] bg-[#1DB954]/10 border border-[#1DB954]/40 px-1.5 py-0.5 rounded text-[#1DB954] hover:bg-[#1DB954]/20 transition-colors"
+                >
+                  <span>{showPlayer ? '▼' : '▶'}</span>
+                  <span>{showPlayer ? 'Hide' : 'Play'}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Spotify Player */}
+        {spotifyId && showPlayer && (
+          <iframe
+            src={`https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator&theme=0`}
+            width="100%"
+            height="80"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            className="rounded-lg mb-3"
+          />
+        )}
 
         {post.note && (
           <p className="font-body text-sm text-groove-brown italic leading-relaxed mb-3 pl-1 border-l-2 border-groove-dust">"{post.note}"</p>
@@ -87,8 +116,6 @@ export default function PostCard({ post, onAuthRequired }) {
         {/* Reactions - Star Rating */}
         <div className="flex items-center gap-1 mb-3">
           {REACTIONS.slice().reverse().map((r, i) => {
-            const starIndex = i + 1  // 1~5
-            const isSelected = userReaction === r.key
             const isHighlighted = userReaction
               ? REACTIONS.slice().reverse().findIndex(x => x.key === userReaction) >= i
               : false
@@ -97,7 +124,7 @@ export default function PostCard({ post, onAuthRequired }) {
               <button
                 key={r.key}
                 onClick={() => handleReaction(r.key)}
-                title={`${starIndex}점 - ${r.label}`}
+                title={`${i + 1}점 - ${r.label}`}
                 className="transition-transform hover:scale-125 active:scale-110"
               >
                 <svg
@@ -116,7 +143,6 @@ export default function PostCard({ post, onAuthRequired }) {
             )
           })}
 
-          {/* 선택된 반응 라벨 + 카운트 */}
           {userReaction && (() => {
             const selected = REACTIONS.find(r => r.key === userReaction)
             const count = counts[userReaction]
