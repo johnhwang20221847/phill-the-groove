@@ -67,9 +67,9 @@ export default function Rate({ onAuthRequired }) {
   if (!user) return (
     <div className="max-w-lg mx-auto px-4 py-16 text-center">
       <div className="w-20 h-20 rounded-full bg-groove-vinyl mx-auto mb-6 flex items-center justify-center"><span className="text-3xl">🎵</span></div>
-      <h1 className="font-display font-black text-groove-vinyl text-3xl mb-3">Give Me Songs to Rate!</h1>
+      <h1 className="font-display font-black text-groove-vinyl text-3xl mb-3">Give Me Songs to !</h1>
       <p className="font-mono text-xs text-groove-label mb-6">Sign in to start rating.</p>
-      <button onClick={onAuthRequired} className="bg-groove-vinyl text-groove-cream font-mono text-xs tracking-widest uppercase px-6 py-3 rounded hover:bg-groove-brown transition-colors">Sign In to Rate</button>
+      <button onClick={onAuthRequired} className="bg-groove-vinyl text-groove-cream font-mono text-xs tracking-widest uppercase px-6 py-3 rounded hover:bg-groove-brown transition-colors">Sign In to </button>
     </div>
   )
 
@@ -92,6 +92,13 @@ export default function Rate({ onAuthRequired }) {
 
   const post = queue[current]
   const progress = (current / queue.length) * 100
+
+  if (!post) return (
+    <div className="max-w-lg mx-auto px-4 py-16 text-center">
+      <div className="w-16 h-16 rounded-full bg-groove-paper mx-auto mb-4 animate-pulse" />
+      <p className="font-mono text-xs text-groove-label">Loading the queue...</p>
+    </div>
+  )
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8">
