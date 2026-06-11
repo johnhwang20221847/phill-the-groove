@@ -84,23 +84,48 @@ export default function PostCard({ post, onAuthRequired }) {
           <p className="font-body text-sm text-groove-brown italic leading-relaxed mb-3 pl-1 border-l-2 border-groove-dust">"{post.note}"</p>
         )}
 
-        {/* Reactions */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {REACTIONS.map(r => (
-            <button
-              key={r.key}
-              onClick={() => handleReaction(r.key)}
-              title={r.label}
-              className={`flex items-center gap-1 px-2 py-1 rounded-full border text-xs font-mono transition-all ${
-                userReaction === r.key
-                  ? 'bg-groove-vinyl border-groove-vinyl text-groove-cream scale-105'
-                  : 'bg-groove-paper border-groove-dust text-groove-label hover:border-groove-brown hover:scale-105'
-              }`}
-            >
-              <span>{r.emoji}</span>
-              {counts[r.key] > 0 && <span>{counts[r.key]}</span>}
-            </button>
-          ))}
+        {/* Reactions - Star Rating */}
+        <div className="flex items-center gap-1 mb-3">
+          {REACTIONS.slice().reverse().map((r, i) => {
+            const starIndex = i + 1  // 1~5
+            const isSelected = userReaction === r.key
+            const isHighlighted = userReaction
+              ? REACTIONS.slice().reverse().findIndex(x => x.key === userReaction) >= i
+              : false
+
+            return (
+              <button
+                key={r.key}
+                onClick={() => handleReaction(r.key)}
+                title={`${starIndex}점 - ${r.label}`}
+                className="transition-transform hover:scale-125 active:scale-110"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  className="w-7 h-7 drop-shadow-sm"
+                  fill={isHighlighted ? '#C0A020' : 'none'}
+                  stroke={isHighlighted ? '#C0A020' : '#BBBBBB'}
+                  strokeWidth="1.5"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.499Z"
+                  />
+                </svg>
+              </button>
+            )
+          })}
+
+          {/* 선택된 반응 라벨 + 카운트 */}
+          {userReaction && (() => {
+            const selected = REACTIONS.find(r => r.key === userReaction)
+            const count = counts[userReaction]
+            return (
+              <span className="font-mono text-xs text-groove-label ml-1">
+                {selected.label}{count > 0 ? ` (${count})` : ''}
+              </span>
+            )
+          })()}
         </div>
 
         {/* Footer */}
