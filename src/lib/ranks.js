@@ -7,11 +7,11 @@ export const RANKS = [
 ]
 
 export const REACTIONS = [
-  { key: 'red',    emoji: '5⭐', label: 'Heart-stopper', score: 5,  color: '#C0392B' },
-  { key: 'orange', emoji: '4⭐',   label: "That's it!",    score: 3,  color: '#D48B2A' },
-  { key: 'yellow', emoji: '3⭐',     label: 'Not bad',       score: 1,  color: '#C8A400' },
-  { key: 'blue',   emoji: '2⭐',       label: 'Not my vibe',   score: 0,  color: '#2980B9' },
-  { key: 'black',  emoji: '1⭐',         label: 'Skip',          score: -1, color: '#555555' },
+   { key: 'red',    emoji: '⭐⭐⭐⭐⭐', label: 'Heart-stopper', score: 5,  color: '#C0392B' },
+  { key: 'orange', emoji: '⭐⭐⭐⭐',   label: "That's it!",    score: 3,  color: '#D48B2A' },
+  { key: 'yellow', emoji: '⭐⭐⭐',     label: 'Not bad',       score: 1,  color: '#C8A400' },
+  { key: 'blue',   emoji: '⭐⭐',       label: 'Not my vibe',   score: 0,  color: '#2980B9' },
+  { key: 'black',  emoji: '⭐',         label: 'Skip',          score: -1, color: '#555555' },
 ]
 
 export function getRank(score) {
