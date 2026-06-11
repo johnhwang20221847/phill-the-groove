@@ -120,12 +120,17 @@ export default function Rate({ onAuthRequired }) {
         {post.note && <p className="font-body text-sm text-groove-brown italic text-center border-t border-groove-dust/50 pt-4 leading-relaxed">"{post.note}"</p>}
         <p className="font-mono text-[10px] text-groove-dust text-center mt-3">— recommended by {post.author_name}</p>
       </div>
-      <div className="grid grid-cols-5 gap-2">
+      <div className="flex flex-col gap-2">
         {REACTIONS.map(r => (
-          <button key={r.key} onClick={() => handleReaction(r.key)} disabled={reacting} title={r.label}
-            className="flex flex-col items-center gap-1 bg-groove-paper border border-groove-dust rounded-lg p-3 hover:border-groove-brown hover:scale-105 active:scale-95 transition-all disabled:opacity-50">
-            <span className="text-xl">{r.emoji}</span>
-            <span className="font-mono text-[9px] text-groove-label text-center leading-tight">{r.label}</span>
+          <button
+            key={r.key}
+            onClick={() => handleReaction(r.key)}
+            disabled={reacting}
+            title={r.label}
+            className="flex items-center justify-between w-full bg-groove-paper border border-groove-dust rounded-lg px-4 py-3 hover:border-groove-brown hover:bg-groove-cream active:scale-95 transition-all disabled:opacity-50 group"
+          >
+            <span className="font-mono text-xs text-groove-label group-hover:text-groove-brown transition-colors">{r.label}</span>
+            <span className="text-lg tracking-tight">{r.emoji}</span>
           </button>
         ))}
       </div>
