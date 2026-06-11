@@ -22,7 +22,7 @@ export default function Rate({ onAuthRequired }) {
     setLoading(true)
     try {
       const postsSnap = await getDocs(collection(db, 'posts'))
-      const allPosts = postsSnap.docs.map(d => ({ id: d.id, ...d.data() }))
+      const allPosts = postsSnap.docs.map(d => ({ id: d.id, cover_url: null, genre: null, year: null, note: null, ...d.data() }))
 
       // Filter out own posts and already reacted
       const filtered = []
