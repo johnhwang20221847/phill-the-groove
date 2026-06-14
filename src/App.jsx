@@ -8,9 +8,11 @@ import Rate from './pages/Rate'
 import Leaderboard from './pages/Leaderboard'
 import Profile from './pages/Profile'
 import Archive from './pages/Archive'
+import WelcomeModal from './components/WelcomeModal'
 
 function AppInner() {
   const [authOpen, setAuthOpen] = useState(false)
+  const [welcomeOpen, setWelcomeOpen] = useState(() => !localStorage.getItem('welcomed'))
 
   return (
     <div className="min-h-screen bg-groove-cream bg-grain">
@@ -25,6 +27,12 @@ function AppInner() {
         </Routes>
       </main>
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
+      {welcomeOpen && (
+        <WelcomeModal onClose={() => {
+          localStorage.setItem('welcomed', '1')
+          setWelcomeOpen(false)
+        }} />
+      )}
     </div>
   )
 }
